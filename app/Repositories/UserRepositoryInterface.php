@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
-use App\DTO\CreateUserDTO;
+use App\DTO\Users\CreateUserDTO;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 interface UserRepositoryInterface
 {
@@ -12,5 +13,9 @@ interface UserRepositoryInterface
 
     public function create(CreateUserDTO $data): User;
 
+    /**
+     * @param int $perPage
+     * @return LengthAwarePaginator<User>
+     */
     public function getPaginated(int $perPage = 12): LengthAwarePaginator;
 }

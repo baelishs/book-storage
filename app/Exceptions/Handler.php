@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\Books\BookNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -36,6 +38,13 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (BookNotFoundException $e) {
+            return new JsonResponse(
+                ['message' => $e->getMessage()],
+                404
+            );
         });
     }
 }

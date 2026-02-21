@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
-use App\DTO\CreateUserDTO;
+use App\DTO\Users\CreateUserDTO;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -22,6 +23,7 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::query()
             ->select('id', 'login')
+            ->orderBy('id')
             ->paginate($perPage);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use App\DTO\CreateUserDTO;
+use App\DTO\Auth\AuthDTO;
+use App\DTO\Auth\AuthResultDTO;
+use App\DTO\Users\CreateUserDTO;
 use App\Repositories\AccessTokenRepositoryInterface;
 use App\Repositories\UserRepositoryInterface;
-use App\DTO\AuthDTO;
 use Illuminate\Validation\ValidationException;
 
-readonly class AuthService
+class AuthService
 {
     private const AUTHORIZATION_TOKEN_TYPE = 'Bearer';
 
@@ -21,33 +22,29 @@ readonly class AuthService
     /**
      * @throws ValidationException
      */
-    public function login(AuthDTO $authDTO): array
+    public function login(AuthDTO $authDTO): AuthResultDTO
     {
         if (!$user = $this->userRepository->findByLogin($authDTO->login)) {
-            throw ValidationException::withMessages([
-                'login' => ['Login is not exist'],
-            ]);
+            throw ValidationException::withMessages(['login' => ['Login is not exist']]);
         }
 
         if (!$this->hasher->check($authDTO->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'login' => ['Invalid credentials'],
-            ]);
+            throw ValidationException::withMessages(['login' => ['Invalid credentials']]);
         }
 
         $this->tokenRepository->deleteUserTokens($user);
         $newAccessToken = $this->tokenRepository->createUserToken($user);
 
-        return [
-            'token' => $newAccessToken->plainTextToken,
-            'token_type' => 'Bearer',
-        ];
+        return new AuthResultDTO(
+            token: $newAccessToken->plainTextToken,
+            token_type: self::AUTHORIZATION_TOKEN_TYPE,
+        );
     }
 
     /**
      * @throws ValidationException
      */
-    public function register(AuthDTO $data): array
+    public function register(AuthDTO $data): AuthResultDTO
     {
         if ($this->userRepository->findByLogin($data->login)) {
             throw ValidationException::withMessages(['login' => ['Login already exists']]);
@@ -60,14 +57,21 @@ readonly class AuthService
 
         $newAccessToken = $this->tokenRepository->createUserToken($user);
 
-        return [
-            'token' => $newAccessToken->plainTextToken,
-            'token_type' => self::AUTHORIZATION_TOKEN_TYPE,
-        ];
+        return new AuthResultDTO(
+            token: $newAccessToken->plainTextToken,
+            token_type: self::AUTHORIZATION_TOKEN_TYPE,
+        );
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function logout(int $tokenId): void
     {
-        $this->tokenRepository->delete($tokenId);
+        if (!$tokenModel = $this->tokenRepository->findById($tokenId)) {
+            throw ValidationException::withMessages(['token' => ['Invalid token']]);
+        }
+
+        $this->tokenRepository->delete($tokenModel);
     }
 }

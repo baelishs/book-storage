@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserResource;
-use App\Repositories\UserRepositoryInterface;
 use App\Services\UserService;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
@@ -14,8 +11,10 @@ class UserController extends Controller
         private readonly UserService $userService,
     ) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-        return response()->json($this->userService->getUsers());
+        return response()->json(
+            $this->userService->getUsers(),
+        );
     }
 }

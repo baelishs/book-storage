@@ -11,9 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AuthController extends Controller
 {
     public function __construct(
-        private readonly AuthService $service
+        private readonly AuthService $authService,
     ) {}
-
 
     /**
      * @throws ValidationException
@@ -21,7 +20,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         return response()->json(
-            $this->service->login($request->toDto())
+            $this->authService->login($request->toDto())
         );
     }
 
@@ -31,13 +30,15 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         return response()->json(
-            $this->service->register($request->toDto())
+            $this->authService->register($request->toDto())
         );
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $this->service->logout($request->user()->currentAccessToken()->id);
+        $tokenId = $request->user()->currentAccessToken()->id;
+        $this->authService->logout($tokenId);
+
         return response()->json(['message' => 'Logged out successfully']);
     }
 }

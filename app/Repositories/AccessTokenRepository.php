@@ -3,18 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\NewAccessToken;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AccessTokenRepository implements AccessTokenRepositoryInterface
 {
-    public function delete(int $id): bool
+    public function delete(PersonalAccessToken $model): bool
     {
-        DB::table('personal_access_tokens')
-            ->where('id', '=', $id)
-            ->delete();
-
-        return true;
+        return $model->delete();
     }
 
     public function createUserToken(User $user): NewAccessToken
@@ -25,5 +21,10 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
     public function deleteUserTokens(User $user): void
     {
         $user->tokens()->delete();
+    }
+
+    public function findById(int $id): ?PersonalAccessToken
+    {
+        return PersonalAccessToken::query()->where('id', '=', $id)->first();
     }
 }

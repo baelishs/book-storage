@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Http\Resources\UserResource;
+use App\DTO\Users\UserListDTO;
+use App\Mappers\Users\UsersMapper;
 use App\Repositories\UserRepositoryInterface;
 
 class UserService
@@ -11,22 +12,15 @@ class UserService
 
     public function __construct(
         protected UserRepositoryInterface $userRepository,
+        protected UsersMapper $mapper,
     )
     {
     }
 
-    public function getUsers(): array
+    public function getUsers(): UserListDTO
     {
-        $users = $this->userRepository->getPaginated(self::PAGINATION_PER_PAGE);
-
-        return [
-            'data' => UserResource::collection($users->items()),
-            'meta' => [
-                'current_page' => $users->currentPage(),
-                'last_page' => $users->lastPage(),
-                'per_page' => $users->perPage(),
-                'total' => $users->total(),
-            ],
-        ];
+        return $this->mapper->userListToDTO(
+            list: $this->userRepository->getPaginated(self::PAGINATION_PER_PAGE),
+        );
     }
 }
