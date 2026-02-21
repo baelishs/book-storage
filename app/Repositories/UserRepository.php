@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\DTO\CreateUserDTO;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -15,5 +16,12 @@ class UserRepository implements UserRepositoryInterface
     public function create(CreateUserDTO $data): User
     {
         return User::create($data->toArray());
+    }
+
+    public function getPaginated(int $perPage = 12): LengthAwarePaginator
+    {
+        return User::query()
+            ->select('id', 'login')
+            ->paginate($perPage);
     }
 }
