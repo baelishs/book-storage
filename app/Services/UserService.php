@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\DTO\Users\UserListDTO;
-use App\Mappers\Users\UsersMapper;
+use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserService
 {
@@ -12,15 +12,17 @@ class UserService
 
     public function __construct(
         protected UserRepositoryInterface $userRepository,
-        protected UsersMapper $mapper,
     )
     {
     }
 
-    public function getUsers(): UserListDTO
+    /**
+     * @return LengthAwarePaginator<User>
+     */
+    public function getUsers(): LengthAwarePaginator
     {
-        return $this->mapper->userListToDTO(
-            list: $this->userRepository->getPaginated(self::PAGINATION_PER_PAGE),
+        return $this->userRepository->getPaginated(
+            perPage: self::PAGINATION_PER_PAGE,
         );
     }
 }

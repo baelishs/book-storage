@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Common\PaginationResource;
+use App\Http\Resources\User\UserResource;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -13,8 +15,11 @@ class UserController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json(
-            $this->userService->getUsers(),
-        );
+        $result = $this->userService->getUsers();
+
+        return response()->json([
+            'data' => UserResource::collection($result->items()),
+            'meta' => new PaginationResource($result),
+        ]);
     }
 }

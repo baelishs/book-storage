@@ -2,16 +2,15 @@
 
 namespace App\Services;
 
-use App\DTO\Books\BooksListDTO;
 use App\DTO\Books\CreateBookDTO;
 use App\DTO\Books\UpdateBookDTO;
 use App\Exceptions\Books\BookNotFoundException;
 use App\Exceptions\Users\UserNotFoundException;
-use App\Mappers\Books\BooksMapper;
 use App\Models\Book;
 use App\Repositories\BookRepositoryInterface;
 use App\Repositories\UserRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BookService
 {
@@ -20,26 +19,30 @@ class BookService
     public function __construct(
         protected UserRepositoryInterface $userRepository,
         protected BookRepositoryInterface $bookRepository,
-        protected BooksMapper $booksMapper,
         protected LibraryAccessService $libraryAccessService,
     ) {
     }
 
-    public function getUserBooks(int $userId): BooksListDTO
+    /**
+     * @param int $userId
+     * @return LengthAwarePaginator<Book>
+     */
+    public function getUserBooks(int $userId): LengthAwarePaginator
     {
-        return $this->booksMapper->booksListToDTO(
-            list: $this->bookRepository->getOwnBooks(
-                userId: $userId,
-                perPage: self::PAGINATION_PER_PAGE
-            ),
+        return $this->bookRepository->getOwnBooks(
+            userId: $userId,
+            perPage: self::PAGINATION_PER_PAGE
         );
     }
 
     /**
-     * @throws UserNotFoundException
+     * @param int $ownerId
+     * @param int $viewerId
+     * @return LengthAwarePaginator<Book>
      * @throws AuthorizationException
+     * @throws UserNotFoundException
      */
-    public function getUserBooksForViewer(int $ownerId, int $viewerId): BooksListDTO
+    public function getUserBooksForViewer(int $ownerId, int $viewerId): LengthAwarePaginator
     {
         if (!$this->userRepository->exist($ownerId)) {
             throw new UserNotFoundException($ownerId);
@@ -49,11 +52,9 @@ class BookService
             throw new AuthorizationException("You do not have access to this user's books");
         }
 
-        return $this->booksMapper->booksListToDTO(
-            list: $this->bookRepository->getByUserId(
-                userId: $ownerId,
-                perPage: self::PAGINATION_PER_PAGE,
-            ),
+        return $this->bookRepository->getByUserId(
+            userId: $ownerId,
+            perPage: self::PAGINATION_PER_PAGE
         );
     }
 

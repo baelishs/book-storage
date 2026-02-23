@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Books\BookNotFoundException;
 use App\Http\Requests\CreateBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Http\Resources\Books\BooksResource;
+use App\Http\Resources\Common\PaginationResource;
 use App\Services\BookService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -16,34 +20,53 @@ class BookController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        return response()->json(
-            $this->bookService->getUserBooks($request->user()->id)
+        $result = $this->bookService->getUserBooks(
+            userId: $request->user()->id
         );
+
+        return response()->json([
+            'data' => BooksResource::collection($result->items()),
+            'meta' => new PaginationResource($result),
+        ]);
     }
 
     public function store(CreateBookRequest $request): JsonResponse
     {
         $book = $this->bookService->createBook($request->toDto());
 
-        return response()->json($book, 201);
+        return (new BooksResource($book))->response()->setStatusCode(201);
     }
 
-    public function show(int $id, Request $request): JsonResponse
+    /**
+     * @throws AuthorizationException
+     * @throws BookNotFoundException
+     */
+    public function show(int $id, Request $request): BooksResource
     {
-        return response()->json(
-            $this->bookService->getBook($id, $request->user()->id)
+        $book = $this->bookService->getBook(
+            id: $id,
+            userId: $request->user()->id
         );
+
+        return new BooksResource($book);
     }
 
-    public function update(UpdateBookRequest $request): JsonResponse
+    /**
+     * @throws BookNotFoundException
+     */
+    public function update(UpdateBookRequest $request): BooksResource
     {
-        return response()->json(
-            $this->bookService->updateBook(
-                dto: $request->toDto(),
-            )
+        $book = $this->bookService->updateBook(
+            dto: $request->toDto(),
         );
+
+        return new BooksResource($book);
     }
 
+    /**
+     * @throws AuthorizationException
+     * @throws BookNotFoundException
+     */
     public function destroy(int $id, Request $request): JsonResponse
     {
         $this->bookService->deleteBook($id, $request->user()->id);
@@ -51,6 +74,10 @@ class BookController extends Controller
         return response()->json(['message' => 'Book deleted successfully']);
     }
 
+    /**
+     * @throws AuthorizationException
+     * @throws BookNotFoundException
+     */
     public function restore(int $id, Request $request): JsonResponse
     {
         $this->bookService->restoreBook(

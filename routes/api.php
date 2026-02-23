@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\ExternalBookController;
 use App\Http\Controllers\LibraryAccessController;
 use App\Http\Controllers\UserBooksController;
 use App\Http\Controllers\UserController;
@@ -40,4 +41,9 @@ Route::middleware('auth:sanctum')->prefix('books')->group(function () {
 
 Route::middleware('auth:sanctum')->prefix('library-access')->group(function () {
     Route::post('/', [LibraryAccessController::class, 'store']);
+});
+
+Route::middleware('auth:sanctum')->prefix('external')->group(function () {
+    Route::get('/search', [ExternalBookController::class, 'search']);
+    Route::post('/import', [ExternalBookController::class, 'import']);
 });

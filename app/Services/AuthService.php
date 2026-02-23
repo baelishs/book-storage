@@ -44,15 +44,15 @@ class AuthService
     /**
      * @throws ValidationException
      */
-    public function register(AuthDTO $data): AuthResultDTO
+    public function register(AuthDTO $authDTO): AuthResultDTO
     {
-        if ($this->userRepository->findByLogin($data->login)) {
+        if ($this->userRepository->findByLogin($authDTO->login)) {
             throw ValidationException::withMessages(['login' => ['Login already exists']]);
         }
 
         $user = $this->userRepository->create(new CreateUserDTO(
-            login: $data->login,
-            passwordHash: $this->hasher->create($data->password),
+            login: $authDTO->login,
+            passwordHash: $this->hasher->create($authDTO->password),
         ));
 
         $newAccessToken = $this->tokenRepository->createUserToken($user);

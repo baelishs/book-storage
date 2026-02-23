@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GrantLibraryAccessRequest;
 use App\Services\LibraryAccessService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 
 class LibraryAccessController extends Controller
@@ -13,6 +14,9 @@ class LibraryAccessController extends Controller
     ) {
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(GrantLibraryAccessRequest $request): JsonResponse
     {
         $this->libraryAccessService->grantAccess(

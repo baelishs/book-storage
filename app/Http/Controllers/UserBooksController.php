@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Users\UserNotFoundException;
+use App\Http\Resources\Books\BooksResource;
+use App\Http\Resources\Common\PaginationResource;
 use App\Services\BookService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -13,15 +17,20 @@ class UserBooksController extends Controller
     )
     {}
 
+    /**
+     * @throws UserNotFoundException
+     * @throws AuthorizationException
+     */
     public function getUserBooks(int $userId, Request $request): JsonResponse
     {
-        $currentUserId = $request->user()->id;
-
-        return response()->json(
-            $this->bookService->getUserBooksForViewer(
-                ownerId: $userId,
-                viewerId: $currentUserId
-            )
+        $result = $this->bookService->getUserBooksForViewer(
+            ownerId: $userId,
+            viewerId: $request->user()->id,
         );
+
+        return response()->json([
+            'data' => BooksResource::collection($result->items()),
+            'meta' => new PaginationResource($result),
+        ]);
     }
 }

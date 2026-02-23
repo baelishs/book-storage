@@ -4,7 +4,10 @@ namespace App\Exceptions;
 
 use App\Exceptions\Books\BookNotFoundException;
 use App\Exceptions\Users\UserNotFoundException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
 
@@ -53,6 +56,25 @@ class Handler extends ExceptionHandler
                 ['message' => $e->getMessage()],
                 404
             );
+        });
+
+        $this->renderable(function (AuthenticationException $e, $request) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 401);
+        });
+
+        $this->renderable(function (AuthorizationException $e, $request) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 403);
+        });
+
+        $this->renderable(function (ValidationException $e, $request) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
         });
     }
 }

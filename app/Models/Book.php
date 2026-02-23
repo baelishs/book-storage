@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $user_id
+ * @property string|null $external_id
  * @property string $title
  * @property string $content
  * @property Carbon|null $created_at
@@ -29,6 +30,7 @@ class Book extends Model
      */
     protected $fillable = [
         'user_id',
+        'external_id',
         'title',
         'content',
     ];
