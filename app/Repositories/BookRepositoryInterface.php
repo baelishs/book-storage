@@ -14,7 +14,14 @@ interface BookRepositoryInterface
      * @param int $perPage
      * @return LengthAwarePaginator<Book>
      */
-    public function getUserBooks(int $userId, int $perPage = 12): LengthAwarePaginator;
+    public function getOwnBooks(int $userId, int $perPage = 12): LengthAwarePaginator;
+
+    /**
+     * @param int $userId
+     * @param int $perPage
+     * @return LengthAwarePaginator<Book>
+     */
+    public function getByUserId(int $userId, int $perPage): LengthAwarePaginator;
 
     public function create(CreateBookDTO $data): Book;
 

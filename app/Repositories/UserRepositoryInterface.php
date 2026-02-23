@@ -18,4 +18,6 @@ interface UserRepositoryInterface
      * @return LengthAwarePaginator<User>
      */
     public function getPaginated(int $perPage = 12): LengthAwarePaginator;
+
+    public function exist(int $id): bool;
 }

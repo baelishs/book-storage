@@ -9,11 +9,20 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class BookRepository implements BookRepositoryInterface
 {
-    public function getUserBooks(int $userId, int $perPage = 12): LengthAwarePaginator
+    public function getOwnBooks(int $userId, int $perPage = 12): LengthAwarePaginator
     {
         return Book::query()
             ->where('user_id', $userId)
-            ->select('id', 'title')
+            ->select('id', 'title', 'user_id')
+            ->orderBy('id', 'desc')
+            ->paginate($perPage);
+    }
+
+    public function getByUserId(int $userId, int $perPage): LengthAwarePaginator
+    {
+        return Book::query()
+            ->where('user_id', $userId)
+            ->select('id', 'title', 'user_id')
             ->orderBy('id', 'desc')
             ->paginate($perPage);
     }

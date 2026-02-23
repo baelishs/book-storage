@@ -6,24 +6,54 @@ use App\DTO\Books\BooksListDTO;
 use App\DTO\Books\CreateBookDTO;
 use App\DTO\Books\UpdateBookDTO;
 use App\Exceptions\Books\BookNotFoundException;
+use App\Exceptions\Users\UserNotFoundException;
 use App\Mappers\Books\BooksMapper;
 use App\Models\Book;
 use App\Repositories\BookRepositoryInterface;
+use App\Repositories\UserRepositoryInterface;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class BookService
 {
     private const PAGINATION_PER_PAGE = 12;
 
     public function __construct(
+        protected UserRepositoryInterface $userRepository,
         protected BookRepositoryInterface $bookRepository,
         protected BooksMapper $booksMapper,
+        protected LibraryAccessService $libraryAccessService,
     ) {
     }
 
     public function getUserBooks(int $userId): BooksListDTO
     {
         return $this->booksMapper->booksListToDTO(
-            list: $this->bookRepository->getUserBooks($userId, self::PAGINATION_PER_PAGE),
+            list: $this->bookRepository->getOwnBooks(
+                userId: $userId,
+                perPage: self::PAGINATION_PER_PAGE
+            ),
+        );
+    }
+
+    /**
+     * @throws UserNotFoundException
+     * @throws AuthorizationException
+     */
+    public function getUserBooksForViewer(int $ownerId, int $viewerId): BooksListDTO
+    {
+        if (!$this->userRepository->exist($ownerId)) {
+            throw new UserNotFoundException($ownerId);
+        }
+
+        if (!$this->libraryAccessService->hasAccess($ownerId, $viewerId)) {
+            throw new AuthorizationException("You do not have access to this user's books");
+        }
+
+        return $this->booksMapper->booksListToDTO(
+            list: $this->bookRepository->getByUserId(
+                userId: $ownerId,
+                perPage: self::PAGINATION_PER_PAGE,
+            ),
         );
     }
 
@@ -34,11 +64,16 @@ class BookService
 
     /**
      * @throws BookNotFoundException
+     * @throws AuthorizationException
      */
     public function getBook(int $id, int $userId): Book
     {
-        if (!$book = $this->bookRepository->findByIdAndUser($id, $userId)) {
+        if (!$book = $this->bookRepository->findById($id)) {
             throw new BookNotFoundException($id);
+        }
+
+        if (!$this->libraryAccessService->hasAccess($book->user_id, $userId)) {
+            throw new AuthorizationException('You do not have access to this book');
         }
 
         return $book;
@@ -57,7 +92,7 @@ class BookService
     }
 
     /**
-     * @throws BookNotFoundException
+     * @throws BookNotFoundException|AuthorizationException
      */
     public function deleteBook(int $id, int $userId): bool
     {
@@ -65,16 +100,25 @@ class BookService
             throw new BookNotFoundException($id);
         }
 
+        if ($book->user_id !== $userId) {
+            throw new AuthorizationException("You do not have access to delete this book");
+        }
+
         return $this->bookRepository->delete($book);
     }
 
     /**
      * @throws BookNotFoundException
+     * @throws AuthorizationException
      */
-    public function restoreBook(int $id): bool
+    public function restoreBook(int $id, int $userId): bool
     {
         if (!$book = $this->bookRepository->findDestroyed($id)) {
             throw new BookNotFoundException($id);
+        }
+
+        if ($book->user_id !== $userId) {
+            throw new AuthorizationException("You do not have access to restore this book");
         }
 
         return $this->bookRepository->restore($book);

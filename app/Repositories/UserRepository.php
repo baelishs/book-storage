@@ -26,4 +26,9 @@ class UserRepository implements UserRepositoryInterface
             ->orderBy('id')
             ->paginate($perPage);
     }
+
+    public function exist(int $id): bool
+    {
+        return User::query()->where('id', $id)->exists();
+    }
 }

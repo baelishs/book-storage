@@ -37,10 +37,11 @@ class BookController extends Controller
 
     public function update(UpdateBookRequest $request): JsonResponse
     {
-        $dto = $request->toDto();
-        $updatedBook = $this->bookService->updateBook($dto);
-
-        return response()->json($updatedBook);
+        return response()->json(
+            $this->bookService->updateBook(
+                dto: $request->toDto(),
+            )
+        );
     }
 
     public function destroy(int $id, Request $request): JsonResponse
@@ -50,9 +51,12 @@ class BookController extends Controller
         return response()->json(['message' => 'Book deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore(int $id, Request $request): JsonResponse
     {
-        $this->bookService->restoreBook($id);
+        $this->bookService->restoreBook(
+            id: $id,
+            userId: $request->user()->id,
+        );
 
         return response()->json(['message' => 'Book restored successfully']);
     }

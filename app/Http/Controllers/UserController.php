@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\UserService;
-use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends Controller
 {
