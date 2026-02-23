@@ -1,4 +1,4 @@
-.PHONY: run down exec migrate test test-unit test-feature test-coverage install-deps
+.PHONY: run down exec migrate test-unit install-deps
 
 run:
 	docker-compose up -d --build
