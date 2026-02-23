@@ -25,7 +25,7 @@ class ImportBookRequest extends FormRequest
     {
         return [
             'external_id' => ['required', 'string', 'max:255'],
-            'source' => ['required', 'string', 'in:google,mif'],
+            'source' => ['required', 'string', 'in:google,MannIvanovFerber'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'url' => ['nullable', 'url', 'max:2048'],
