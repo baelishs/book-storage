@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\Users\UserNotFoundException;
+use App\Http\Resources\Books\BooksListResource;
 use App\Http\Resources\Books\BooksResource;
 use App\Http\Resources\Common\PaginationResource;
 use App\Services\BookService;
+use http\Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,7 +31,7 @@ class UserBooksController extends Controller
         );
 
         return response()->json([
-            'data' => BooksResource::collection($result->items()),
+            'data' => BooksListResource::collection($result->items()),
             'meta' => new PaginationResource($result),
         ]);
     }

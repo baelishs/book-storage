@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\Books\BookNotFoundException;
 use App\Http\Requests\CreateBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Http\Resources\Books\BooksListResource;
 use App\Http\Resources\Books\BooksResource;
 use App\Http\Resources\Common\PaginationResource;
 use App\Services\BookService;
@@ -25,7 +26,7 @@ class BookController extends Controller
         );
 
         return response()->json([
-            'data' => BooksResource::collection($result->items()),
+            'data' => BooksListResource::collection($result->items()),
             'meta' => new PaginationResource($result),
         ]);
     }

@@ -32,7 +32,7 @@ class UpdateBookRequest extends FormRequest
     public function toDto(): UpdateBookDTO
     {
         return new UpdateBookDTO(
-            id: $this->route('id'),
+            id: $this->route('book'),
             userId: $this->user()->id,
             title: $this->input('title'),
             content: $this->input('content'),

@@ -6,7 +6,7 @@ use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BooksResource extends JsonResource
+class BooksListResource extends JsonResource
 {
     /** @var Book */
     public $resource;
@@ -14,8 +14,8 @@ class BooksResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->resource->id,
             'title' => $this->resource->title,
-            'content' => $this->resource->content,
         ];
     }
 }
