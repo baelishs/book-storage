@@ -10,7 +10,7 @@ exec:
 	docker-compose exec app bash
 
 migrate:
-	docker-compose exec app php artisan migrate
+	docker compose exec app php artisan migrate
 
 install-deps:
 	docker-compose exec app composer install
