@@ -19,31 +19,29 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/login', 'login');
+    Route::post('/register', 'register');
 });
 
-Route::middleware('auth:sanctum')->get('/users', [UserController::class, 'index']);
-Route::middleware('auth:sanctum')->get('/users/{userId}/books', [UserBooksController::class, 'getUserBooks']);
 
-Route::middleware('auth:sanctum')->prefix('books')->group(function () {
-    Route::get('/', [BookController::class, 'index']);
-    Route::post('/', [BookController::class, 'store']);
-    Route::get('/{id}', [BookController::class, 'show']);
-    Route::put('/{id}', [BookController::class, 'update']);
-    Route::delete('/{id}', [BookController::class, 'destroy']);
-    Route::post('/{id}/restore', [BookController::class, 'restore']);
-});
+Route::middleware('auth:sanctum')->group(function () {
 
-Route::middleware('auth:sanctum')->prefix('library-access')->group(function () {
-    Route::post('/', [LibraryAccessController::class, 'store']);
-});
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', fn (Request $request) => $request->user());
 
-Route::middleware('auth:sanctum')->prefix('external')->group(function () {
-    Route::get('/search', [ExternalBookController::class, 'search']);
-    Route::post('/import', [ExternalBookController::class, 'import']);
+    Route::get('/users', [UserController::class, 'index']);
+
+    Route::get('users/{user}/books', [UserBooksController::class, 'getUserBooks']);
+
+    Route::apiResource('books', BookController::class);
+    Route::post('books/{book}/restore', [BookController::class, 'restore']);
+
+    Route::post('library-access', [LibraryAccessController::class, 'store']);
+
+    Route::prefix('external')->controller(ExternalBookController::class)->group(function () {
+        Route::get('/search', 'search');
+        Route::post('/import', 'import');
+    });
 });
