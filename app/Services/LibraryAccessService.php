@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\LibraryAccessRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Validation\ValidationException;
 
 class LibraryAccessService
 {
@@ -13,12 +14,13 @@ class LibraryAccessService
     }
 
     /**
-     * @throws AuthorizationException
+     * @throws ValidationException
      */
     public function grantAccess(int $ownerId, int $viewerId): void
     {
         if ($ownerId === $viewerId) {
-            throw new AuthorizationException('Cannot grant access to yourself');
+            throw ValidationException::withMessages([
+                'viewer_id' => 'You cannot grant access to yourself.']);
         }
 
         if ($this->libraryAccessRepository->exists($ownerId, $viewerId)) {

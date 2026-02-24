@@ -28,8 +28,8 @@ class BookSearchService
             try {
                 $providerResults = $provider->search($query);
                 $results = array_merge($results, $providerResults);
-            } catch (ExternalBookServiceException $e) {
-                continue;
+            } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+                throw new ExternalBookServiceException();
             }
         }
 

@@ -3,12 +3,14 @@
 namespace App\Exceptions;
 
 use App\Exceptions\Books\BookNotFoundException;
+use App\Exceptions\Books\ExternalBookServiceException;
 use App\Exceptions\Users\UserNotFoundException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -43,38 +45,43 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
 
-        $this->renderable(function (BookNotFoundException $e) {
-            return new JsonResponse(
-                ['message' => $e->getMessage()],
-                404
-            );
-        });
+    public function render($request, Throwable $e): JsonResponse|Response
+    {
+            return match (true) {
 
-        $this->renderable(function (UserNotFoundException $e) {
-            return new JsonResponse(
-                ['message' => $e->getMessage()],
-                404
-            );
-        });
+                $e instanceof BookNotFoundException|| $e instanceof UserNotFoundException =>
+                $this->errorResponse($e->getMessage(), 404),
 
-        $this->renderable(function (AuthenticationException $e, $request) {
-            return response()->json([
-                'message' => 'Unauthenticated',
-            ], 401);
-        });
+                $e instanceof AuthenticationException =>
+                $this->errorResponse('Unauthenticated', 401),
 
-        $this->renderable(function (AuthorizationException $e, $request) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 403);
-        });
+                $e instanceof AuthorizationException =>
+                $this->errorResponse($e->getMessage(), 403),
 
-        $this->renderable(function (ValidationException $e, $request) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $e->errors(),
-            ], 422);
-        });
+                $e instanceof ExternalBookServiceException =>
+                $this->errorResponse($e->getMessage(), 503),
+
+                $e instanceof ValidationException =>
+                $this->validationErrorResponse($e),
+
+                default =>
+                parent::render($request, $e)
+            };
+    }
+
+    private function errorResponse(string $message, int $status): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message], $status);
+    }
+
+    private function validationErrorResponse(ValidationException $e): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'errors' => $e->errors()], 422);
     }
 }
