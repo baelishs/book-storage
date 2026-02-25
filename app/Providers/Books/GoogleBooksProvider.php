@@ -18,7 +18,8 @@ class GoogleBooksProvider implements BookProviderInterface
     public function __construct(
         private readonly ClientInterface $client,
         private readonly GoogleBooksMapper $mapper,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ExternalBookServiceException

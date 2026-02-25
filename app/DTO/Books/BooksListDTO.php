@@ -13,5 +13,6 @@ class BooksListDTO
     public function __construct(
         public array $data,
         public PaginationDTO $meta,
-    ) {}
+    ) {
+    }
 }

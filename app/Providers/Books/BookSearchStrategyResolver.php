@@ -9,7 +9,8 @@ class BookSearchStrategyResolver
      */
     public function __construct(
         private readonly array $providers,
-    ) {}
+    ) {
+    }
 
     /**
      * @return BookProviderInterface[]

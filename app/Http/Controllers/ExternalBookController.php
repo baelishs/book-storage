@@ -16,7 +16,8 @@ class ExternalBookController extends Controller
 {
     public function __construct(
         private readonly BookSearchService $bookSearchService,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws Exception

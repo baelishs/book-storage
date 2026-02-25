@@ -7,7 +7,8 @@ class CreateUserDTO
     public function __construct(
         public string $login,
         public string $passwordHash,
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

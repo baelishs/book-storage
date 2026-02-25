@@ -16,7 +16,8 @@ class MannIvanovFerberProvider implements BookProviderInterface
     public function __construct(
         private readonly ClientInterface $client,
         private readonly ManIvanovFerberMapper $mapper,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ExternalBookServiceException

@@ -10,5 +10,6 @@ class ExternalBookDTO
         public string $source = '',
         public ?string $description = null,
         public ?string $url = null,
-    ) {}
+    ) {
+    }
 }

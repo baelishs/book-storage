@@ -13,7 +13,6 @@ class UserListDTO
     public function __construct(
         public array $data,
         public PaginationDTO $meta,
-    )
-    {
+    ) {
     }
 }

@@ -11,8 +11,8 @@ class PaginationDTO
         public int $last_page,
         public int $per_page,
         public int $total,
-    )
-    {}
+    ) {
+    }
 
     public static function fromLengthAwarePaginator(LengthAwarePaginator $paginator): self
     {

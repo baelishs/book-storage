@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\Auth\AuthResource;
@@ -13,7 +14,8 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly AuthService $authService,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ValidationException

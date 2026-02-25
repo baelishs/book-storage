@@ -14,7 +14,8 @@ class BookSearchService
     public function __construct(
         private readonly BookSearchStrategyResolver $strategyResolver,
         private readonly ExternalBookRepositoryInterface $externalBookRepository,
-    ) {}
+    ) {
+    }
 
     /**
      * @param string $query
@@ -28,8 +29,8 @@ class BookSearchService
             try {
                 $providerResults = $provider->search($query);
                 $results = array_merge($results, $providerResults);
-            } catch (\GuzzleHttp\Exception\GuzzleException $e) {
-                throw new ExternalBookServiceException();
+            } catch (ExternalBookServiceException $e) {
+                continue;
             }
         }
 

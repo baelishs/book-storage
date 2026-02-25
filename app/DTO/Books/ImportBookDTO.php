@@ -11,7 +11,8 @@ class ImportBookDTO
         public string $title,
         public ?string $description = null,
         public ?string $url = null,
-    ) {}
+    ) {
+    }
 
     public function getContent(): string
     {

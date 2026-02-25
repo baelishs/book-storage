@@ -17,7 +17,8 @@ class AuthService
         protected UserRepositoryInterface $userRepository,
         protected AccessTokenRepositoryInterface $tokenRepository,
         protected AuthHasher $hasher,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ValidationException

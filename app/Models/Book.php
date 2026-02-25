@@ -21,7 +21,8 @@ use Illuminate\Support\Carbon;
  */
 class Book extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

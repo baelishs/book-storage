@@ -11,7 +11,8 @@ class UserController extends Controller
 {
     public function __construct(
         private readonly UserService $userService,
-    ) {}
+    ) {
+    }
 
     public function index(): JsonResponse
     {

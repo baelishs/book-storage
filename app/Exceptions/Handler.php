@@ -49,26 +49,26 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e): JsonResponse|Response
     {
-            return match (true) {
+        return match (true) {
 
-                $e instanceof BookNotFoundException|| $e instanceof UserNotFoundException =>
-                $this->errorResponse($e->getMessage(), 404),
+            $e instanceof BookNotFoundException || $e instanceof UserNotFoundException =>
+            $this->errorResponse($e->getMessage(), 404),
 
-                $e instanceof AuthenticationException =>
-                $this->errorResponse('Unauthenticated', 401),
+            $e instanceof AuthenticationException =>
+            $this->errorResponse('Unauthenticated', 401),
 
-                $e instanceof AuthorizationException =>
-                $this->errorResponse($e->getMessage(), 403),
+            $e instanceof AuthorizationException =>
+            $this->errorResponse($e->getMessage(), 403),
 
-                $e instanceof ExternalBookServiceException =>
-                $this->errorResponse($e->getMessage(), 503),
+            $e instanceof ExternalBookServiceException =>
+            $this->errorResponse($e->getMessage(), 503),
 
-                $e instanceof ValidationException =>
-                $this->validationErrorResponse($e),
+            $e instanceof ValidationException =>
+            $this->validationErrorResponse($e),
 
-                default =>
-                parent::render($request, $e)
-            };
+            default =>
+            parent::render($request, $e)
+        };
     }
 
     private function errorResponse(string $message, int $status): JsonResponse

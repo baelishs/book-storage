@@ -6,7 +6,6 @@ use App\DTO\Users\CreateUserDTO;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
 interface UserRepositoryInterface
 {
     public function findByLogin(string $login): ?User;
