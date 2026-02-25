@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Repositories\LibraryAccessRepositoryInterface;
 use App\Services\LibraryAccessService;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
@@ -30,7 +31,7 @@ class LibraryAccessServiceTest extends TestCase
                     $repository->expects($testCase->never())->method('exists');
                     $repository->expects($testCase->never())->method('create');
                 },
-                'expectedException' => AuthorizationException::class,
+                'expectedException' => ValidationException::class,
             ],
         ];
     }

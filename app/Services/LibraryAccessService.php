@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Repositories\LibraryAccessRepositoryInterface;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Validation\ValidationException;
 
 class LibraryAccessService
